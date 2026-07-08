@@ -140,13 +140,68 @@ body {
   min-height: 60vh;
 }
 
-#scene {
+.scene-frame {
+  position: relative;
   flex: 1;
   min-width: 0;
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-2);
   box-shadow: var(--glow-md);
   background: var(--surface-1);
+  overflow: hidden;
+}
+
+#scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Scanline texture, matching the CRT tracking-console direction in
+   docs/DESIGN.md, drawn as an overlay so it reads consistently over the
+   canvas regardless of what's rendered beneath it. */
+.scene-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 176, 0, 0.05) 0px,
+    rgba(255, 176, 0, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* The signature detail from docs/DESIGN.md: a slow radar sweep that keeps
+   the console feeling alive even at rest, between shots. */
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.radar-sweep::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(from 0deg, rgba(255, 176, 0, 0.22), transparent 12%, transparent 100%);
+  animation: radar-spin 6s linear infinite;
+}
+
+@keyframes radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep::before {
+    animation: none;
+  }
 }
 
 .hud {
