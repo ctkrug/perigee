@@ -8,6 +8,7 @@ A map of the codebase for anyone (including a future build/QA run) picking this 
 npm install
 npm run dev      # Vite dev server
 npm test         # vitest run — physics core + pure game logic
+npm run coverage # vitest run --coverage
 npm run lint     # eslint src/ test/
 npm run build    # static production build to dist/, relative paths (subpath-safe)
 ```
@@ -34,8 +35,14 @@ src/
     starfield.js      static star-field generation + draw
     renderer.js       drawScene() — the only place that touches CanvasRenderingContext2D;
                        samples effects.js each frame from fx timestamps
-    input.js          attachAimInput() — pointer events -> onAimStart/Move/onLaunch/
-                       onAimCancel callbacks, no physics/rendering opinion
+    keyboardAim.js     stepAimState/velocityFromAim/initialAimState — pure angle+power
+                       math for the keyboard control scheme (pure, tested)
+    input.js          attachAimInput() — pointer AND keyboard input -> the same
+                       onAimStart/Move/onLaunch/onAimCancel callbacks, no physics/
+                       rendering opinion. Keyboard callbacks pass a world-space
+                       velocity (via keyboardAim.js) plus `{ fromKeyboard: true }`;
+                       pointer callbacks pass a screen-space point — main.js branches
+                       on the meta flag to tell them apart.
     audio.js          createAudioEngine() — WebAudio oscillator SFX, lazy AudioContext,
                        localStorage-persisted mute; every call is a safe no-op without
                        a WebAudio implementation
@@ -53,13 +60,16 @@ index.html         single page: topbar (wordmark/tagline/mute), scene-frame (can
 
 ## Data flow for one shot
 
-1. `input.js` reports pointer down/move/up as world-space-agnostic screen coordinates.
-2. `main.js` converts screen deltas to world-space velocity (`AIM_POWER` scales drag
-   distance to launch speed) via `renderer.screenToWorld`.
-3. While dragging, `main.js` calls `trajectory.predict()` with that velocity to get the
+1. `input.js` reports aim input from two sources: pointer down/move/up as screen
+   coordinates, or arrow-key/Enter/Escape as a `keyboardAim.js` angle+power state.
+2. `main.js` converts either into a world-space velocity — screen deltas via
+   `renderer.screenToWorld` and `AIM_POWER`, or keyboard state via
+   `keyboardAim.velocityFromAim()` — branching on the `fromKeyboard` meta flag
+   `input.js` passes alongside each callback.
+3. While aiming, `main.js` calls `trajectory.predict()` with that velocity to get the
    ghost path, which `renderer.drawScene()` renders as a dashed line.
-4. On release, `main.js` sets the probe's real velocity and flips `gameState` to
-   `"flying"`.
+4. On release/launch, `main.js` sets the probe's real velocity and flips `gameState`
+   to `"flying"`.
 5. Each animation frame, `main.js.updatePhysics()` advances the probe through
    `integrator.step()` in `SUBSTEPS_PER_FRAME` substeps (substepping keeps close
    flybys numerically stable), appending to the motion `trail` and checking goal/
@@ -91,10 +101,12 @@ canvas draws — they're CSS so they layer over the canvas without extra per-fra
 
 ## Testing philosophy
 
-Everything pure (core physics, level lookup, effect curves, particle generation, the
-share string) has unit tests covering the happy path and boundaries (empty/zero/max/
-malformed input). DOM/canvas/WebAudio wiring (`main.js`, `renderer.js`, `input.js`,
-`hud.js`, `overlay.js`) is deliberately kept thin and is exercised by manual
-play-testing rather than unit tests — `audio.js` is the one exception, tested by
-stubbing the two ambient globals it reads (`window`, `localStorage`) rather than
-pulling in a DOM environment.
+Everything pure (core physics including the `body.js` factories, level lookup, effect
+curves, particle generation, the share string, the keyboard aim-state math in
+`keyboardAim.js`) has unit tests covering the happy path and boundaries (empty/zero/
+max/malformed input). DOM/canvas wiring (`main.js`, `renderer.js`, `input.js`,
+`hud.js`, `overlay.js`) is deliberately kept thin and is exercised by manual/scripted
+browser play-testing (Playwright) rather than unit tests — `audio.js` is the one
+exception: it's tested by stubbing the ambient globals it reads (`window`,
+`localStorage`) with fakes detailed enough to exercise the real oscillator/gain
+wiring, not just the "no WebAudio" no-op branch, without pulling in a DOM environment.
