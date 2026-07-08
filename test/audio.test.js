@@ -168,3 +168,48 @@ describe("createAudioEngine — no AudioContext available", () => {
     }).not.toThrow();
   });
 });
+
+describe("createAudioEngine — localStorage unavailable", () => {
+  // Storage access can throw a SecurityError in private browsing, with
+  // cookies/storage disabled, or inside a sandboxed iframe. The engine is
+  // constructed synchronously at game startup, so a throw here would take
+  // the whole page down before a single frame renders.
+  it("does not throw when localStorage.getItem throws", () => {
+    globalThis.localStorage = {
+      getItem() {
+        throw new Error("access denied");
+      },
+      setItem() {
+        throw new Error("access denied");
+      },
+    };
+    globalThis.window = {};
+    expect(() => createAudioEngine()).not.toThrow();
+  });
+
+  it("falls back to unmuted when reading the mute flag throws", () => {
+    globalThis.localStorage = {
+      getItem() {
+        throw new Error("access denied");
+      },
+      setItem() {
+        throw new Error("access denied");
+      },
+    };
+    globalThis.window = {};
+    expect(createAudioEngine().isMuted()).toBe(false);
+  });
+
+  it("does not throw when persisting a mute toggle throws", () => {
+    globalThis.localStorage = {
+      getItem: () => null,
+      setItem() {
+        throw new Error("access denied");
+      },
+    };
+    globalThis.window = {};
+    const engine = createAudioEngine();
+    expect(() => engine.setMuted(true)).not.toThrow();
+    expect(engine.isMuted()).toBe(true);
+  });
+});
