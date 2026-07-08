@@ -249,6 +249,10 @@ body {
     flex-direction: column;
   }
 
+  .scene-frame {
+    min-height: 60vh;
+  }
+
   .hud {
     width: auto;
   }
