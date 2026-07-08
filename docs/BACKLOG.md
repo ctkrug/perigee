@@ -52,8 +52,9 @@ build implements to them, QA attacks them. Story 1.1 is the wow moment and must 
 ### [x] 2.4 Design polish — tracking-console chrome
 - [x] The radar-sweep background animation and scanline texture from docs/DESIGN.md are present.
 - [x] Canvas and HUD panel compose correctly at 390px, 768px, and 1440px with no overlap, no
-      horizontal scroll, and no dead empty space. (Reasoned through the CSS in a headless
-      environment with no display — flag for a visual QA pass to double-check in a real browser.)
+      horizontal scroll, and no dead empty space. (Visually confirmed this pass via a headless
+      Chromium screenshot at all three breakpoints — no overlap, no horizontal scroll, canvas
+      fills the majority of the viewport at each size.)
 
 ## Epic 3 — Game feel & audio
 
@@ -75,6 +76,9 @@ build implements to them, QA attacks them. Story 1.1 is the wow moment and must 
 - [x] The probe renders a short fading trail behind it while in flight.
 - [x] Every interactive control (mute button and any controls added this epic) has themed hover,
       focus-visible, and active states — no naked native defaults.
+- [x] The core aiming/launching gesture is keyboard-operable, not just pointer-driven: the canvas
+      is focusable with a themed focus ring, arrow keys aim, Enter/Space launches, Escape cancels.
+      (Added in QA after the sweep found the game was entirely unplayable without a pointer.)
 
 ### [x] 3.4 Design polish — win celebration
 - [x] The win overlay includes a particle/spark burst matching docs/DESIGN.md's signature detail.
