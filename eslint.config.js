@@ -11,6 +11,8 @@ export default [
         document: "readonly",
         localStorage: "readonly",
         requestAnimationFrame: "readonly",
+        navigator: "readonly",
+        performance: "readonly",
       },
     },
     rules: {
