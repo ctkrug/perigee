@@ -1,4 +1,5 @@
 import { drawStarfield } from "./starfield.js";
+import { flashAlpha, pulseScale, shakeOffset } from "./effects.js";
 
 // Maps world coordinates (level space, origin at center) to canvas pixel
 // coordinates, so levels can be authored independent of screen size.
@@ -16,9 +17,21 @@ export function screenToWorld(point, view) {
   };
 }
 
-export function drawScene(ctx, view, { stars, level, probe, ghostPath }) {
+export function drawScene(
+  ctx,
+  view,
+  { stars, level, probe, ghostPath, fx = {}, time = 0, reduceMotion = false },
+) {
   const { width, height } = view;
+  // fx.crashAt/goalAt are timestamps (ms); leaving them unset yields an
+  // infinite elapsed time, which every effect curve treats as "finished."
+  const crashElapsed = fx.crashAt != null ? time - fx.crashAt : Infinity;
+  const goalElapsed = fx.goalAt != null ? time - fx.goalAt : Infinity;
+  const shake = shakeOffset(crashElapsed, reduceMotion);
+
   ctx.clearRect(0, 0, width, height);
+  ctx.save();
+  ctx.translate(shake.x, shake.y);
 
   drawStarfield(ctx, stars);
 
@@ -44,11 +57,12 @@ export function drawScene(ctx, view, { stars, level, probe, ghostPath }) {
   }
 
   const goal = worldToScreen(level.goal.position, view);
+  const goalPulse = pulseScale(goalElapsed);
   ctx.strokeStyle = "#7fff9f";
   ctx.lineWidth = 2;
   ctx.setLineDash([4, 4]);
   ctx.beginPath();
-  ctx.arc(goal.x, goal.y, level.goal.radius * view.scale, 0, Math.PI * 2);
+  ctx.arc(goal.x, goal.y, level.goal.radius * view.scale * goalPulse, 0, Math.PI * 2);
   ctx.stroke();
   ctx.setLineDash([]);
 
@@ -71,4 +85,13 @@ export function drawScene(ctx, view, { stars, level, probe, ghostPath }) {
   ctx.beginPath();
   ctx.arc(p.x, p.y, Math.max(probe.radius * view.scale, 3), 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.restore();
+
+  // Drawn after restore() so the flash isn't shifted by the shake translate.
+  const flash = flashAlpha(crashElapsed);
+  if (flash > 0) {
+    ctx.fillStyle = `rgba(255, 107, 53, ${flash * 0.5})`;
+    ctx.fillRect(0, 0, width, height);
+  }
 }
