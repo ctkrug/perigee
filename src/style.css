@@ -102,6 +102,7 @@ body {
 }
 
 .icon-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -116,6 +117,19 @@ body {
     background var(--t-ui) var(--ease-out),
     box-shadow var(--t-ui) var(--ease-out),
     transform var(--t-ui) var(--ease-out);
+}
+
+.icon-btn.is-muted .sound-wave {
+  opacity: 0.2;
+}
+
+.icon-btn.is-muted::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 22px;
+  background: var(--danger);
+  transform: rotate(45deg);
 }
 
 .icon-btn:hover {
