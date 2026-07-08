@@ -9,6 +9,13 @@ export function worldToScreen(point, view) {
   };
 }
 
+export function screenToWorld(point, view) {
+  return {
+    x: (point.x - view.width / 2) / view.scale,
+    y: (point.y - view.height / 2) / view.scale,
+  };
+}
+
 export function drawScene(ctx, view, { stars, level, probe, ghostPath }) {
   const { width, height } = view;
   ctx.clearRect(0, 0, width, height);
