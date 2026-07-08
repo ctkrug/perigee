@@ -20,6 +20,9 @@ const AIM_POWER = 2.4;
 const SUBSTEPS_PER_FRAME = 6;
 const FRAME_DT = 1 / 60;
 
+// How many recent positions the fading motion trail keeps.
+const TRAIL_LENGTH = 24;
+
 export function startGame({ canvas, hudEl, muteButton }) {
   const ctx = canvas.getContext("2d");
   const today = new Date();
@@ -35,6 +38,7 @@ export function startGame({ canvas, hudEl, muteButton }) {
   let statusText = "Ready";
   let dragStart = null;
   let ghostPath = null;
+  let trail = [];
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
@@ -56,6 +60,7 @@ export function startGame({ canvas, hudEl, muteButton }) {
     probe = createProbe({ position: { ...level.probeStart }, velocity: { x: 0, y: 0 } });
     gameState = "aiming";
     ghostPath = null;
+    trail = [];
   }
 
   function endShot(status) {
@@ -71,6 +76,8 @@ export function startGame({ canvas, hudEl, muteButton }) {
     const dt = FRAME_DT / SUBSTEPS_PER_FRAME;
     for (let i = 0; i < SUBSTEPS_PER_FRAME; i += 1) {
       probe = step(probe, level.planets, dt);
+      trail.push({ x: probe.position.x, y: probe.position.y });
+      if (trail.length > TRAIL_LENGTH) trail.shift();
 
       if (distance(probe.position, level.goal.position) <= level.goal.radius) {
         endShot("Goal reached");
@@ -90,7 +97,7 @@ export function startGame({ canvas, hudEl, muteButton }) {
   }
 
   function render() {
-    drawScene(ctx, view, { stars, level, probe, ghostPath });
+    drawScene(ctx, view, { stars, level, probe, ghostPath, trail });
     renderHud(hudEl, { shots, par: level.par, status: statusText });
   }
 
