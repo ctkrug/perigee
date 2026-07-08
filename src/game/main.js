@@ -74,6 +74,7 @@ export function startGame({ canvas, hudEl, muteButton, winOverlayEl }) {
   function resetProbe() {
     probe = createProbe({ position: { ...level.probeStart }, velocity: { x: 0, y: 0 } });
     gameState = "aiming";
+    statusText = "Ready";
     ghostPath = null;
     trail = [];
     fx.crashAt = null;
