@@ -31,8 +31,10 @@ thirty seconds, not an evening.
   multi-planet threading pass, a near-capture, a twin-well balance).
 - **Par and share.** Every level has a par shot count; reaching the goal shows a win
   overlay with a compact, no-spoiler share string (date + shot count).
-- **A control scheme with exactly one input.** Drag to aim, release to launch. The
-  challenge is entirely in reading the gravity, never in execution skill.
+- **A control scheme with exactly one gesture.** Drag to aim, release to launch —
+  or aim/launch with the keyboard (arrow keys to rotate and power, Enter/Space to
+  fire, Escape to cancel). The challenge is entirely in reading the gravity, never
+  in execution skill.
 - **Juice.** Impact shake/flash, a goal pulse, a fading motion trail, a win
   particle burst, and synthesized WebAudio SFX with a persisted mute — all
   respecting `prefers-reduced-motion`.
