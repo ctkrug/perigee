@@ -59,8 +59,11 @@ export function attachAimInput(canvas, { onAimStart, onAimMove, onLaunch, onAimC
     }
 
     if (event.key === "Enter" || event.key === " ") {
-      if (!keyAiming) return;
+      // Always suppress the native behavior (Space scrolls the page) even
+      // when there's no aim in progress to launch — the canvas has focus,
+      // so nothing else should react to these keys while it does.
       event.preventDefault();
+      if (!keyAiming) return;
       const velocity = velocityFromAim(keyState);
       endKeyAim();
       onLaunch(velocity, { fromKeyboard: true });
