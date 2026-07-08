@@ -12,8 +12,8 @@
     "lint": "eslint src test"
   },
   "devDependencies": {
-    "eslint": "^9.9.0",
-    "vite": "^5.4.0",
-    "vitest": "^2.0.5"
+    "eslint": "^9.39.4",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
   }
 }
