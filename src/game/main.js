@@ -39,6 +39,13 @@ export function startGame({ canvas, hudEl, muteButton }) {
   let dragStart = null;
   let ghostPath = null;
   let trail = [];
+  const fx = { crashAt: null, goalAt: null };
+
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduceMotion = motionQuery.matches;
+  motionQuery.addEventListener("change", (event) => {
+    reduceMotion = event.matches;
+  });
 
   function resize() {
     const rect = canvas.getBoundingClientRect();
@@ -61,13 +68,20 @@ export function startGame({ canvas, hudEl, muteButton }) {
     gameState = "aiming";
     ghostPath = null;
     trail = [];
+    fx.crashAt = null;
+    fx.goalAt = null;
   }
 
   function endShot(status) {
     gameState = "ended";
     statusText = status;
-    if (status === "Goal reached") audio.playGoal();
-    else audio.playCollision();
+    if (status === "Goal reached") {
+      fx.goalAt = performance.now();
+      audio.playGoal();
+    } else {
+      if (status === "Crashed") fx.crashAt = performance.now();
+      audio.playCollision();
+    }
     window.setTimeout(resetProbe, 1200);
   }
 
@@ -96,14 +110,14 @@ export function startGame({ canvas, hudEl, muteButton }) {
     }
   }
 
-  function render() {
-    drawScene(ctx, view, { stars, level, probe, ghostPath, trail });
+  function render(time) {
+    drawScene(ctx, view, { stars, level, probe, ghostPath, trail, fx, time, reduceMotion });
     renderHud(hudEl, { shots, par: level.par, status: statusText });
   }
 
-  function loop() {
+  function loop(time) {
     updatePhysics();
-    render();
+    render(time);
     requestAnimationFrame(loop);
   }
 
