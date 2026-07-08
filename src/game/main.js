@@ -8,6 +8,12 @@ import { drawScene, screenToWorld, worldToScreen } from "./renderer.js";
 import { attachAimInput } from "./input.js";
 import { createAudioEngine } from "./audio.js";
 import { renderHud } from "./hud.js";
+import { createWinOverlay } from "./overlay.js";
+import { buildShareString } from "./share.js";
+
+// How long the goal-pulse animation gets to play before the win overlay
+// covers the canvas — skipped entirely under reduced motion.
+const WIN_OVERLAY_DELAY_MS = 320;
 
 // Pixel distance dragged, per unit of launch speed. Tuned so a drag across
 // roughly a third of the canvas produces a shot that can reach across the
@@ -23,11 +29,12 @@ const FRAME_DT = 1 / 60;
 // How many recent positions the fading motion trail keeps.
 const TRAIL_LENGTH = 24;
 
-export function startGame({ canvas, hudEl, muteButton }) {
+export function startGame({ canvas, hudEl, muteButton, winOverlayEl }) {
   const ctx = canvas.getContext("2d");
   const today = new Date();
   const level = getLevelForDate(today);
   const audio = createAudioEngine();
+  const winOverlay = createWinOverlay(winOverlayEl);
 
   const view = { width: 0, height: 0, scale: 1 };
   let stars = [];
@@ -78,11 +85,23 @@ export function startGame({ canvas, hudEl, muteButton }) {
     if (status === "Goal reached") {
       fx.goalAt = performance.now();
       audio.playGoal();
+      window.setTimeout(
+        () => {
+          winOverlay.show({
+            shots,
+            par: level.par,
+            shareText: buildShareString({ date: today, shots, par: level.par }),
+            reduceMotion,
+            dismiss: resetProbe,
+          });
+        },
+        reduceMotion ? 0 : WIN_OVERLAY_DELAY_MS,
+      );
     } else {
       if (status === "Crashed") fx.crashAt = performance.now();
       audio.playCollision();
+      window.setTimeout(resetProbe, 1200);
     }
-    window.setTimeout(resetProbe, 1200);
   }
 
   function updatePhysics() {
