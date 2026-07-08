@@ -20,7 +20,7 @@ export function screenToWorld(point, view) {
 export function drawScene(
   ctx,
   view,
-  { stars, level, probe, ghostPath, fx = {}, time = 0, reduceMotion = false },
+  { stars, level, probe, ghostPath, trail = [], fx = {}, time = 0, reduceMotion = false },
 ) {
   const { width, height } = view;
   // fx.crashAt/goalAt are timestamps (ms); leaving them unset yields an
@@ -79,6 +79,17 @@ export function drawScene(
     ctx.stroke();
     ctx.setLineDash([]);
   }
+
+  for (let i = 0; i < trail.length; i += 1) {
+    const s = worldToScreen(trail[i], view);
+    const fade = (i + 1) / trail.length;
+    ctx.globalAlpha = fade * 0.35;
+    ctx.fillStyle = "#ffd9a0";
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, Math.max(probe.radius * view.scale * fade, 1), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
 
   const p = worldToScreen(probe.position, view);
   ctx.fillStyle = "#ffd9a0";
