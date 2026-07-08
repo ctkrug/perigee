@@ -171,6 +171,12 @@ body {
   height: 100%;
 }
 
+#scene:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  box-shadow: var(--glow-md);
+}
+
 /* Scanline texture, matching the CRT tracking-console direction in
    docs/DESIGN.md, drawn as an overlay so it reads consistently over the
    canvas regardless of what's rendered beneath it. */

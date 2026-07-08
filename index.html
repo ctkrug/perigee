@@ -47,7 +47,12 @@
       </header>
       <main class="stage">
         <div class="scene-frame">
-          <canvas id="scene" aria-label="Orbital tracking display"></canvas>
+          <canvas
+            id="scene"
+            tabindex="0"
+            role="application"
+            aria-label="Orbital tracking display. Drag from the probe to aim and release to launch. Or use arrow keys to aim: left/right rotate, up/down adjust power. Press Enter or Space to launch, Escape to cancel."
+          ></canvas>
           <div class="radar-sweep" aria-hidden="true"></div>
         </div>
         <div id="hud" class="hud" aria-live="polite"></div>

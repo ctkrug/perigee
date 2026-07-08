@@ -6,6 +6,7 @@ import { getLevelForDate, WORLD_BOUNDS } from "./levels.js";
 import { createStarfield } from "./starfield.js";
 import { drawScene, screenToWorld, worldToScreen } from "./renderer.js";
 import { attachAimInput } from "./input.js";
+import { initialAimState } from "./keyboardAim.js";
 import { createAudioEngine } from "./audio.js";
 import { renderHud } from "./hud.js";
 import { createWinOverlay } from "./overlay.js";
@@ -140,35 +141,47 @@ export function startGame({ canvas, hudEl, muteButton, winOverlayEl }) {
     requestAnimationFrame(loop);
   }
 
+  function aimVelocityFromScreenPoint(point) {
+    const probeScreen = worldToScreen(probe.position, view);
+    const delta = screenToWorld({ x: point.x - probeScreen.x, y: point.y - probeScreen.y }, view);
+    return { x: delta.x * AIM_POWER, y: delta.y * AIM_POWER };
+  }
+
+  function updateGhostPath(velocity) {
+    const aimedProbe = { ...probe, velocity };
+    ghostPath = predict(aimedProbe, level.planets, {
+      dt: FRAME_DT / SUBSTEPS_PER_FRAME,
+      steps: 400,
+      bounds: WORLD_BOUNDS,
+    });
+  }
+
+  function launch(velocity) {
+    probe = { ...probe, velocity };
+    dragStart = null;
+    ghostPath = null;
+    shots += 1;
+    statusText = "Flying";
+    gameState = "flying";
+    audio.playLaunch();
+  }
+
   attachAimInput(canvas, {
-    onAimStart(point) {
+    getInitialAim: () => initialAimState(probe.position, level.goal.position),
+    onAimStart(point, meta) {
       if (gameState !== "aiming") return;
       audio.unlock();
-      dragStart = point;
+      dragStart = meta?.fromKeyboard ? true : point;
     },
-    onAimMove(point) {
+    onAimMove(pointOrVelocity, meta) {
       if (!dragStart) return;
-      const probeScreen = worldToScreen(probe.position, view);
-      const delta = screenToWorld({ x: point.x - probeScreen.x, y: point.y - probeScreen.y }, view);
-      const velocity = { x: delta.x * AIM_POWER, y: delta.y * AIM_POWER };
-      const aimedProbe = { ...probe, velocity };
-      ghostPath = predict(aimedProbe, level.planets, {
-        dt: FRAME_DT / SUBSTEPS_PER_FRAME,
-        steps: 400,
-        bounds: WORLD_BOUNDS,
-      });
+      const velocity = meta?.fromKeyboard ? pointOrVelocity : aimVelocityFromScreenPoint(pointOrVelocity);
+      updateGhostPath(velocity);
     },
-    onLaunch(point) {
+    onLaunch(pointOrVelocity, meta) {
       if (!dragStart) return;
-      const probeScreen = worldToScreen(probe.position, view);
-      const delta = screenToWorld({ x: point.x - probeScreen.x, y: point.y - probeScreen.y }, view);
-      probe = { ...probe, velocity: { x: delta.x * AIM_POWER, y: delta.y * AIM_POWER } };
-      dragStart = null;
-      ghostPath = null;
-      shots += 1;
-      statusText = "Flying";
-      gameState = "flying";
-      audio.playLaunch();
+      const velocity = meta?.fromKeyboard ? pointOrVelocity : aimVelocityFromScreenPoint(pointOrVelocity);
+      launch(velocity);
     },
     onAimCancel() {
       dragStart = null;
