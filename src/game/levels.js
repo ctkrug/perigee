@@ -99,7 +99,3 @@ export function levelIdForDate(date) {
 export function getLevelForDate(date) {
   return getLevelById(levelIdForDate(date));
 }
-
-export function getDailyLevel() {
-  return getLevelForDate(new Date());
-}
