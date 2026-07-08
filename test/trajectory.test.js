@@ -16,8 +16,29 @@ describe("predict", () => {
     expect(path.length).toBeLessThan(201);
   });
 
-  it("stops early once the path leaves the level bounds", () => {
+  it("stops early once the path leaves the level bounds to the right", () => {
     const probe = { position: { x: 0, y: 0 }, velocity: { x: 100, y: 0 }, radius: 2 };
+    const bounds = { minX: -50, maxX: 50, minY: -50, maxY: 50 };
+    const path = predict(probe, [], { dt: 1, steps: 20, bounds });
+    expect(path.length).toBeLessThan(21);
+  });
+
+  it("stops early once the path leaves the level bounds to the left", () => {
+    const probe = { position: { x: 0, y: 0 }, velocity: { x: -100, y: 0 }, radius: 2 };
+    const bounds = { minX: -50, maxX: 50, minY: -50, maxY: 50 };
+    const path = predict(probe, [], { dt: 1, steps: 20, bounds });
+    expect(path.length).toBeLessThan(21);
+  });
+
+  it("stops early once the path leaves the level bounds above", () => {
+    const probe = { position: { x: 0, y: 0 }, velocity: { x: 0, y: -100 }, radius: 2 };
+    const bounds = { minX: -50, maxX: 50, minY: -50, maxY: 50 };
+    const path = predict(probe, [], { dt: 1, steps: 20, bounds });
+    expect(path.length).toBeLessThan(21);
+  });
+
+  it("stops early once the path leaves the level bounds below", () => {
+    const probe = { position: { x: 0, y: 0 }, velocity: { x: 0, y: 100 }, radius: 2 };
     const bounds = { minX: -50, maxX: 50, minY: -50, maxY: 50 };
     const path = predict(probe, [], { dt: 1, steps: 20, bounds });
     expect(path.length).toBeLessThan(21);
