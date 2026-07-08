@@ -1,7 +1,7 @@
 import { createProbe } from "../core/body.js";
-import { distance } from "../core/vector.js";
-import { step, surfaceDistance } from "../core/integrator.js";
+import { step } from "../core/integrator.js";
 import { predict } from "../core/trajectory.js";
+import { resolveShotOutcome } from "../core/outcome.js";
 import { getLevelForDate, WORLD_BOUNDS } from "./levels.js";
 import { createStarfield } from "./starfield.js";
 import { drawScene, screenToWorld, worldToScreen } from "./renderer.js";
@@ -114,18 +114,9 @@ export function startGame({ canvas, hudEl, muteButton, winOverlayEl }) {
       trail.push({ x: probe.position.x, y: probe.position.y });
       if (trail.length > TRAIL_LENGTH) trail.shift();
 
-      if (distance(probe.position, level.goal.position) <= level.goal.radius) {
-        endShot("Goal reached");
-        return;
-      }
-      const crashed = level.planets.some((planet) => surfaceDistance(probe, planet) <= 0);
-      if (crashed) {
-        endShot("Crashed");
-        return;
-      }
-      const { x, y } = probe.position;
-      if (x < WORLD_BOUNDS.minX || x > WORLD_BOUNDS.maxX || y < WORLD_BOUNDS.minY || y > WORLD_BOUNDS.maxY) {
-        endShot("Missed");
+      const outcome = resolveShotOutcome(probe, level.goal, level.planets, WORLD_BOUNDS);
+      if (outcome) {
+        endShot(outcome);
         return;
       }
     }
