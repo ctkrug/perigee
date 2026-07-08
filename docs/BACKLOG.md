@@ -97,8 +97,9 @@ build implements to them, QA attacks them. Story 1.1 is the wow moment and must 
 - [x] `npm run build` outputs a self-contained bundle using only relative asset paths (no
       leading-`/` references in the built HTML/CSS/JS).
 - [x] The built bundle is manually verified to run correctly when served from a non-root
-      subpath, noted in the QA pass. (Verified this run: served `dist/` from `/perigee/` via a
-      local static server and confirmed the page and its JS/CSS assets load with 200s.)
+      subpath, noted in the QA pass. (Verified this run with a real browser, not just HTTP
+      status codes: served `dist/` from `/perigee/`, confirmed the canvas renders at full
+      size and a launched shot actually flies, with zero console/network errors.)
 
 ### [x] 4.3 Physics test coverage stays green in CI
 - [x] `npm test` and `npm run lint` run in CI on every push and pull request and must pass
