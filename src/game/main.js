@@ -2,7 +2,7 @@ import { createProbe } from "../core/body.js";
 import { distance } from "../core/vector.js";
 import { step, surfaceDistance } from "../core/integrator.js";
 import { predict } from "../core/trajectory.js";
-import { getDailyLevel, WORLD_BOUNDS } from "./levels.js";
+import { getLevelForDate, WORLD_BOUNDS } from "./levels.js";
 import { createStarfield } from "./starfield.js";
 import { drawScene, screenToWorld, worldToScreen } from "./renderer.js";
 import { attachAimInput } from "./input.js";
@@ -22,7 +22,8 @@ const FRAME_DT = 1 / 60;
 
 export function startGame({ canvas, hudEl, muteButton }) {
   const ctx = canvas.getContext("2d");
-  const level = getDailyLevel();
+  const today = new Date();
+  const level = getLevelForDate(today);
   const audio = createAudioEngine();
 
   const view = { width: 0, height: 0, scale: 1 };
