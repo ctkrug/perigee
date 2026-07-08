@@ -104,5 +104,5 @@ build implements to them, QA attacks them. Story 1.1 is the wow moment and must 
 ### [x] 4.3 Physics test coverage stays green in CI
 - [x] `npm test` and `npm run lint` run in CI on every push and pull request and must pass
       before the change is considered ship-ready.
-- [x] Every public function in the physics core (vector, integrator, trajectory) has at least
-      one unit test.
+- [x] Every public function in the physics core (vector, body, integrator, trajectory, outcome)
+      has at least one unit test.
