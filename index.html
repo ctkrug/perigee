@@ -24,7 +24,10 @@
   <body>
     <div id="app">
       <header class="topbar">
-        <h1 class="wordmark">PERIGEE</h1>
+        <div class="brand">
+          <h1 class="wordmark">PERIGEE</h1>
+          <p class="tagline">Daily gravity-slingshot puzzle — drag to aim, real n-body gravity does the flying.</p>
+        </div>
         <button id="mute-toggle" class="icon-btn" aria-label="Mute sound" aria-pressed="false">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path
@@ -43,10 +46,36 @@
         </button>
       </header>
       <main class="stage">
-        <canvas id="scene" aria-label="Orbital tracking display"></canvas>
+        <div class="scene-frame">
+          <canvas id="scene" aria-label="Orbital tracking display"></canvas>
+          <div class="radar-sweep" aria-hidden="true"></div>
+        </div>
         <div id="hud" class="hud" aria-live="polite"></div>
       </main>
     </div>
+
+    <div
+      id="win-overlay"
+      class="win-overlay"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="win-title"
+    >
+      <div class="win-panel">
+        <h2 id="win-title">Goal Reached</h2>
+        <p class="win-stats">
+          <span class="win-stat"><span class="win-stat-label">Shots</span><span id="win-shots">0</span></span>
+          <span class="win-stat"><span class="win-stat-label">Par</span><span id="win-par">0</span></span>
+        </p>
+        <div class="win-actions">
+          <button id="win-share" class="btn">Copy result</button>
+          <button id="win-dismiss" class="btn btn-primary">Fly again</button>
+        </div>
+        <div class="win-particles" aria-hidden="true"></div>
+      </div>
+    </div>
+
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>
