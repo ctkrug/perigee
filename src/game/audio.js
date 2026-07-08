@@ -4,9 +4,30 @@
 // context is unavailable (e.g. under a test runner with no WebAudio).
 const MUTE_KEY = "perigee:muted";
 
+// localStorage access can throw (private browsing, disabled cookies, a
+// sandboxed iframe) rather than just being absent. Since this engine is
+// built synchronously at game startup, an uncaught throw here would take
+// the whole page down before a single frame renders.
+function readStoredMute() {
+  try {
+    return localStorage.getItem(MUTE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function writeStoredMute(muted) {
+  try {
+    localStorage.setItem(MUTE_KEY, String(muted));
+  } catch {
+    // Best-effort persistence — muting still works for the rest of the
+    // session, it just won't survive a reload.
+  }
+}
+
 export function createAudioEngine() {
   let ctx = null;
-  let muted = localStorage.getItem(MUTE_KEY) === "true";
+  let muted = readStoredMute();
 
   function ensureContext() {
     if (ctx) return ctx;
@@ -54,7 +75,7 @@ export function createAudioEngine() {
     },
     setMuted(next) {
       muted = next;
-      localStorage.setItem(MUTE_KEY, String(muted));
+      writeStoredMute(muted);
     },
   };
 }
