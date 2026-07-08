@@ -424,3 +424,136 @@ body {
     opacity: 0;
   }
 }
+
+/* Below-the-fold: the game owns the first viewport (#app is min 100vh), and
+   this section carries the marketing/SEO copy under it, in the same amber-CRT
+   tokens so page and app read as one brand. */
+.about {
+  border-top: 1px solid var(--surface-2);
+  padding: var(--space-5) var(--space-4);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 176, 0, 0.06), transparent 55%),
+    var(--bg);
+}
+
+.about-inner {
+  max-width: 68ch;
+  margin: 0 auto;
+}
+
+.about h2 {
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+  color: var(--accent);
+  text-shadow: var(--glow-sm);
+  letter-spacing: 0.08em;
+  margin: 0 0 var(--space-4);
+}
+
+.about h3 {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text);
+  letter-spacing: 0.06em;
+  margin: var(--space-5) 0 var(--space-3);
+}
+
+.about p,
+.about li,
+.about dd {
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.about strong {
+  color: var(--text);
+}
+
+.about-steps,
+.about-features {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.about-features {
+  list-style: none;
+  padding-left: 0;
+}
+
+.about-features li {
+  padding: var(--space-3);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--radius-md);
+}
+
+.about-faq {
+  margin: 0;
+}
+
+.about-faq dt {
+  color: var(--accent);
+  margin-top: var(--space-3);
+}
+
+.about-faq dd {
+  margin: var(--space-1) 0 0;
+}
+
+.about-cta {
+  display: inline-block;
+  margin-top: var(--space-5);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-ui);
+  color: var(--bg);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition:
+    background var(--t-ui) var(--ease-out),
+    box-shadow var(--t-ui) var(--ease-out),
+    transform var(--t-ui) var(--ease-out);
+}
+
+.about-cta:hover {
+  background: var(--accent-support);
+  border-color: var(--accent-support);
+  box-shadow: var(--glow-md);
+}
+
+.about-cta:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.about-cta:active {
+  transform: scale(0.97);
+}
+
+.about-footer {
+  max-width: 68ch;
+  margin: var(--space-5) auto 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--surface-2);
+  font-size: 0.85rem;
+}
+
+.about-footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--t-ui) var(--ease-out);
+}
+
+.about-footer a:hover {
+  color: var(--accent);
+}
+
+.about-footer a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

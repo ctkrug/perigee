@@ -9,6 +9,12 @@
       name="description"
       content="Aim once, then watch real n-body gravity slingshot your probe around planets to thread today's target."
     />
+    <meta property="og:title" content="Perigee — a daily gravity-slingshot puzzle" />
+    <meta
+      property="og:description"
+      content="Aim once, then watch real n-body gravity slingshot your probe around planets to thread today's target."
+    />
+    <meta property="og:type" content="website" />
     <link
       rel="icon"
       type="image/svg+xml"
@@ -27,7 +33,7 @@
       <header class="topbar">
         <div class="brand">
           <h1 class="wordmark">PERIGEE</h1>
-          <p class="tagline">Daily gravity-slingshot puzzle — drag to aim, real n-body gravity does the flying.</p>
+          <p class="tagline">A daily gravity-slingshot puzzle. Aim once; real gravity does the rest.</p>
         </div>
         <button id="mute-toggle" class="icon-btn" aria-label="Mute sound" aria-pressed="false">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
@@ -59,6 +65,75 @@
         <div id="hud" class="hud" aria-live="polite"></div>
       </main>
     </div>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <div class="about-inner">
+        <h2 id="about-title">What is Perigee?</h2>
+        <p>
+          Perigee is a daily gravity puzzle. Every day gives you one level: a probe, a target,
+          and a few planets sitting in the dark between them. You draw a single aim vector and
+          let go. From that instant a real n-body gravity simulation takes over and flies the
+          probe for you. It curves toward the planets, whips around them, and either threads the
+          target in one clean arc or sails off into empty space. There is no thrust and no
+          steering. The only thing you control is that first aim, so the whole puzzle is reading
+          the gravity correctly before you commit.
+        </p>
+
+        <h3>How to play</h3>
+        <ol class="about-steps">
+          <li>Drag out from the probe to set your aim. A dashed ghost path shows where that shot
+            would fly, computed by the same physics as the real flight.</li>
+          <li>Release to launch, then watch it go.</li>
+          <li>Reach the target under par to win, then copy your shot count to share. Prefer the
+            keyboard? Arrow keys rotate and power the aim, Enter or Space launches, Escape
+            cancels.</li>
+        </ol>
+
+        <h3>Why it plays differently</h3>
+        <ul class="about-features">
+          <li><strong>The trajectory is computed, never scripted.</strong> Every frame integrates
+            the pull of every planet in the level, so a slingshot behaves like an actual
+            slingshot instead of a canned animation.</li>
+          <li><strong>You see the physics before you commit.</strong> The ghost path runs the real
+            simulation forward while you aim, so a good shot is a read, not a blind guess.</li>
+          <li><strong>One level a day, keyed to the date.</strong> Everyone solves the same puzzle
+            and compares the same par. Five hand-designed levels rotate and repeat.</li>
+          <li><strong>It respects five minutes.</strong> No account, no install, no clock ticking.
+            Open it, solve today's, close it.</li>
+        </ul>
+
+        <h3>FAQ</h3>
+        <dl class="about-faq">
+          <dt>Is the gravity real or faked?</dt>
+          <dd>Real. The probe's path comes from velocity-Verlet integration of Newtonian gravity
+            against every planet, recomputed each frame. Nothing about the flight is
+            pre-animated.</dd>
+
+          <dt>Do I need an account or a download?</dt>
+          <dd>No. Perigee runs in the browser as a static page. There is no sign-up, no backend,
+            and nothing to install.</dd>
+
+          <dt>How is the daily level chosen?</dt>
+          <dd>The level is picked from the calendar date, so the same day always gives the same
+            puzzle to every player. The rotation cycles through the hand-designed levels and
+            repeats.</dd>
+
+          <dt>Can I play without a mouse?</dt>
+          <dd>Yes. The game is fully keyboard-operable: arrow keys aim, Enter or Space launches,
+            Escape cancels, and the canvas takes focus with a visible ring.</dd>
+
+          <dt>What happens if I miss?</dt>
+          <dd>The probe resets and you try a new aim. Your shot count is what you keep low against
+            the level's par.</dd>
+        </dl>
+
+        <a class="about-cta" href="https://github.com/ctkrug/perigee">View the source on GitHub</a>
+      </div>
+
+      <footer class="about-footer">
+        <a href="https://apps.charliekrug.com">More by Charlie Krug → apps.charliekrug.com</a>
+      </footer>
+    </section>
 
     <div
       id="win-overlay"
