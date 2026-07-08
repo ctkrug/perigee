@@ -130,6 +130,19 @@ describe("attachAimInput — keyboard aim", () => {
     expect(onAimStart).toHaveBeenCalledWith({ x: 10, y: 10 });
   });
 
+  it("falls back to a default aim state when no getInitialAim is supplied", () => {
+    const canvas = createFakeCanvas();
+    const onAimMove = vi.fn();
+    attachAimInput(canvas, { onAimStart: vi.fn(), onAimMove, onLaunch: vi.fn(), onAimCancel: vi.fn() });
+
+    canvas.dispatch("keydown", keyEvent("ArrowRight"));
+
+    // Default state is angle 0 (pure +x) rotated one step right, at power 150.
+    const [velocity] = onAimMove.mock.calls[0];
+    expect(velocity.y).toBeGreaterThan(0);
+    expect(Math.hypot(velocity.x, velocity.y)).toBeCloseTo(150);
+  });
+
   it("ignores unrecognized keys without calling any callback", () => {
     const canvas = createFakeCanvas();
     const onAimStart = vi.fn();
@@ -170,6 +183,26 @@ describe("attachAimInput — pointer drag", () => {
 
     expect(onAimCancel).toHaveBeenCalledTimes(1);
     expect(onAimMove).not.toHaveBeenCalled();
+  });
+
+  it("ignores a pointerup with no prior pointerdown", () => {
+    const canvas = createFakeCanvas();
+    const onLaunch = vi.fn();
+    attachAimInput(canvas, { onAimStart: vi.fn(), onAimMove: vi.fn(), onLaunch, onAimCancel: vi.fn() });
+
+    canvas.dispatch("pointerup", pointerEvent(1, 1));
+
+    expect(onLaunch).not.toHaveBeenCalled();
+  });
+
+  it("ignores a pointercancel with no prior pointerdown", () => {
+    const canvas = createFakeCanvas();
+    const onAimCancel = vi.fn();
+    attachAimInput(canvas, { onAimStart: vi.fn(), onAimMove: vi.fn(), onLaunch: vi.fn(), onAimCancel });
+
+    canvas.dispatch("pointercancel", {});
+
+    expect(onAimCancel).not.toHaveBeenCalled();
   });
 });
 

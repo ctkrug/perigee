@@ -159,6 +159,19 @@ describe("createWinOverlay — dismiss paths", () => {
 });
 
 describe("createWinOverlay — Tab focus trap", () => {
+  it("ignores keys other than Escape and Tab", () => {
+    const root = createFakeRoot();
+    const overlay = createWinOverlay(root);
+    overlay.show({ shots: 1, par: 1, shareText: "x", reduceMotion: true, dismiss: vi.fn() });
+    const trapFocus = globalThis.document._listeners.get("keydown");
+
+    const event = { key: "a", preventDefault: vi.fn() };
+    trapFocus(event);
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(root.hidden).toBe(false);
+  });
+
   it("wraps focus from the last control back to the first on Tab", () => {
     const root = createFakeRoot();
     const overlay = createWinOverlay(root);
@@ -229,5 +242,15 @@ describe("createWinOverlay — share button", () => {
 
     root.elements["#win-share"].click();
     await vi.waitFor(() => expect(root.elements["#win-share"].textContent).toBe("Copy failed"));
+  });
+
+  it("copies an empty string rather than throwing if clicked with no share text set", async () => {
+    const root = createFakeRoot();
+    // createWinOverlay() wires the click listener immediately; clicking
+    // without ever calling show() means dataset.shareText was never set.
+    createWinOverlay(root);
+
+    root.elements["#win-share"].click();
+    await vi.waitFor(() => expect(globalThis.navigator.clipboard.writeText).toHaveBeenCalledWith(""));
   });
 });
